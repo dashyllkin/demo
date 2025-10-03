@@ -4,6 +4,7 @@ from tkinter import *
 from datetime import datetime, timedelta
 
 from Views.NewPasswordView import NewPassword
+from Views.AdminView import AdminView
 
 
 class AuthView(Tk):
@@ -47,31 +48,35 @@ class AuthView(Tk):
         self.user_password = self.password_input.get()
         # передать логин и пароль в метод auth
         self.user =UserController.auth(self.user_login,self.user_password)
-
-
         #если поля пустые
         if self.user_login == '' or self.user_password =='':
             self.message['text'] = 'введите логин и пароль'
 
         #проверка
         elif self.user:
+            print(type(self.user.role_id)) #проверяем type
 
             if self.user.ban:
                 self.message['text']='ВЫ заблокированный. ОБратитесь к администратору'
             elif self.user.first_auth:
                 #направить в другое окно
-                self.message['text']='первый вход в систему'
+                self.message['text']='Вы успешно авторизовались'
                 password= NewPassword(self.user.login)
 
             elif (datetime.now().date() - self.user.date_auth).days>=31:  #добавила date и days чтобы правильно работали между собой типы данных
                 UserController.update(self.user.id, ban= 1)
+
+            elif self.user.role_id.id ==2: #проверяется у объекта user.role_id.id
+                # перейти в окна админа
+                self.message['text'] = 'Здравствуйте администратор'
+                admin = AdminView()
+                self.destroy()
             else:
                 self.message['text']=f'ЗДравствуйте {self.user_login}'
                 self.count_error[self.user_login]=0
-                UserController.update(self.user.id, first_auth=datetime.now().date()) #обновитть дату авторизации на сегодня
-                if self.user.role_id ==2:
-                    #перейти в окна админа
-                    pass
+                UserController.update(self.user.id, date_auth=datetime.now().date()) #обновитть дату авторизации на сегодня
+
+
 
         else:
             self.message['text']=f'вы ввели неверный логин или пароль'

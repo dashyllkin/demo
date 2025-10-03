@@ -8,6 +8,10 @@ class UserController:
     Решистрация пользователя
     Изменение данных пользователя
     """
+
+    @classmethod
+    def get(cls):
+        return Users.select()
     #ВЫвод пользователя
 
     @classmethod
@@ -59,8 +63,9 @@ class UserController:
                 return False
         else:
             return False
+
 if __name__ == "__main__":
     print(UserController.show_login('user'))
-    #UserController.add('user','111111')
+    #UserController.add('admin2','123',2)
     #UserController.update(1,login='USERRR',password='222222')
     #print(UserController.auth('USERRR','222222'))
